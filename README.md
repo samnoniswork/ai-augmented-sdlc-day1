@@ -13,7 +13,7 @@ as submodules.
 | Branch | Path on `main` | Stack |
 | --- | --- | --- |
 | `backend` | `backend/` | Zero-dependency Bun API server |
-| `frontend` | `frontend/` | Angular 19 web app |
+| `frontend` | `frontend/` | Angular 22 web app |
 | `cli` | `cli/` | Zero-dependency CommonJS Node.js CLI |
 | `bundle` | `bundle/` | Generated release: server, built UI, CLI, Dockerfile |
 | `main` | repository root | Submodule pointers, build script, docs, CI |
@@ -35,6 +35,8 @@ git clone --branch main --recurse-submodules https://github.com/samnoniswork/ai-
 ```
 
 In separate terminals from the checkout:
+
+The Angular toolchain requires Node.js 22.22.3+ (22.x), 24.15.0+ (24.x), or 26+.
 
 ```sh
 cd backend && bun start
