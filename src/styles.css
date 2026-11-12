@@ -1,0 +1,5 @@
+* { box-sizing: border-box; }
+body { margin: 0; background: #f5f7fb; color: #17233b; font-family: system-ui, sans-serif; line-height: 1.5; }
+button, input { font: inherit; }
+a { color: #244ec4; overflow-wrap: anywhere; }
+:focus-visible { outline: 3px solid #ee9e36; outline-offset: 3px; }
