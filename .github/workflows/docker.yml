@@ -38,6 +38,11 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           PREVIOUS_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
+          if [[ ! -f bundle/Dockerfile ]]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Generated bundle does not yet include a Dockerfile; skipping."
+            exit 0
+          fi
           if [[ "$EVENT_NAME" != "workflow_run" ]]; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
             exit 0

@@ -1,4 +1,4 @@
-import { copyFile, mkdir, rm, writeFile } from "node:fs/promises";
+import { access, copyFile, cp, mkdir, rm, writeFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -41,7 +41,7 @@ run("npm", ["run", "build"], frontend);
 
 const index = path.join(frontend, "dist", "snip-frontend", "browser", "index.html");
 try {
-  await import("node:fs/promises").then(({ access }) => access(index));
+  await access(index);
 } catch {
   throw new Error(`Angular build output is missing: ${index}`);
 }
@@ -52,9 +52,7 @@ await rm(publicDir, { recursive: true, force: true });
 await mkdir(publicDir, { recursive: true });
 await copyFile(path.join(root, "backend", "server.js"), path.join(bundle, "server.js"));
 await copyFile(path.join(root, "cli", "cli.js"), path.join(bundle, "cli.js"));
-await import("node:fs/promises").then(({ cp }) =>
-  cp(path.join(frontend, "dist", "snip-frontend", "browser"), publicDir, { recursive: true }),
-);
+await cp(path.join(frontend, "dist", "snip-frontend", "browser"), publicDir, { recursive: true });
 await writeFile(path.join(bundle, ".env"), "PUBLIC_DIR=./public\n");
 await writeFile(
   path.join(bundle, "package.json"),
