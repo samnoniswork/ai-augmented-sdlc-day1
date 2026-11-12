@@ -31,7 +31,7 @@ as submodules.
 Use a recursive clone so Git populates all submodule folders:
 
 ```sh
-git clone --recurse-submodules https://github.com/samnoniswork/ai-augmented-sdlc-day1.git
+git clone --branch main --recurse-submodules https://github.com/samnoniswork/ai-augmented-sdlc-day1.git
 ```
 
 In separate terminals from the checkout:
