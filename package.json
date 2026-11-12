@@ -1,8 +1,0 @@
-{
-  "name": "snip-backend",
-  "private": true,
-  "scripts": {
-    "start": "bun run server.js",
-    "test": "bun test"
-  }
-}
