@@ -13,13 +13,23 @@ function run(command, args, cwd, { allowFailure = false } = {}) {
     cwd,
     encoding: "utf8",
     stdio: "inherit",
-    shell: process.platform === "win32",
   });
   if (result.error) throw result.error;
   if (!allowFailure && result.status !== 0) {
     throw new Error(`${command} ${args.join(" ")} failed with exit code ${result.status}`);
   }
   return result.status;
+}
+
+function runNpm(args, cwd) {
+  const windows = process.platform === "win32";
+  const result = windows
+    ? spawnSync(`npm.cmd ${args.join(" ")}`, { cwd, encoding: "utf8", stdio: "inherit", shell: true })
+    : spawnSync("npm", args, { cwd, encoding: "utf8", stdio: "inherit" });
+  if (result.error) throw result.error;
+  if (result.status !== 0) {
+    throw new Error(`npm ${args.join(" ")} failed with exit code ${result.status}`);
+  }
 }
 
 function hasStagedChanges(cwd) {
@@ -31,13 +41,19 @@ function hasStagedChanges(cwd) {
 
 function commitStagedChanges(cwd, message) {
   if (!hasStagedChanges(cwd)) return false;
-  run("git", ["commit", "-m", message], cwd);
+  run("git", [
+    "commit",
+    "-m",
+    message,
+    "-m",
+    "Co-authored-by: OpenBot <335604065+openbotgit[bot]@users.noreply.github.com>",
+  ], cwd);
   return true;
 }
 
 run("git", ["submodule", "update", "--init", "--remote", "backend", "frontend", "cli"], root);
-run("npm", ["install", "--no-package-lock"], frontend);
-run("npm", ["run", "build"], frontend);
+runNpm(["install", "--no-package-lock"], frontend);
+runNpm(["run", "build"], frontend);
 
 const index = path.join(frontend, "dist", "snip-frontend", "browser", "index.html");
 try {
