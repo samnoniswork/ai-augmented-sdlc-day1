@@ -73,20 +73,35 @@ describe('AppComponent', () => {
     expect(app.links()).toEqual([link]);
   });
 
-  it('renders the empty, success, and refreshed table states', () => {
+  it('submits through the Shorten button and renders the refreshed table', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     http.expectOne('/api/links').flush([]);
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('No links yet');
-    app.url.setValue(link.url);
-    app.submit();
+    const rendered = fixture.nativeElement as HTMLElement;
+    const input = rendered.querySelector('input')!;
+    input.value = link.url;
+    input.dispatchEvent(new Event('input'));
+    rendered.querySelector<HTMLButtonElement>('button[type="submit"]')!.click();
     http.expectOne(request => request.method === 'POST').flush(link);
     http.expectOne('/api/links').flush([link]);
     fixture.detectChanges();
-    const rendered = fixture.nativeElement as HTMLElement;
     expect(rendered.querySelector('.success')?.textContent).toContain(link.shortUrl);
     expect(rendered.querySelector('tbody')?.textContent).toContain(link.code);
     expect(rendered.querySelector('tbody')?.textContent).toContain(link.url);
+  });
+
+  it('handles native form submission without navigation and shows validation errors', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    http.expectOne('/api/links').flush([]);
+    fixture.detectChanges();
+    const rendered = fixture.nativeElement as HTMLElement;
+    const event = new Event('submit', { bubbles: true, cancelable: true });
+    rendered.querySelector('form')!.dispatchEvent(event);
+    fixture.detectChanges();
+    expect(event.defaultPrevented).toBeTrue();
+    expect(rendered.querySelector('#url-error')?.textContent).toContain('Enter a valid');
+    http.expectNone(request => request.method === 'POST');
   });
 });

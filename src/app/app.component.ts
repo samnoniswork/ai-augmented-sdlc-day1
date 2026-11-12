@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AbstractControl, FormControl, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { Link, LinksService } from './links.service';
 
@@ -33,6 +33,7 @@ export class AppComponent {
   private requestNumber = 0;
 
   readonly url = new FormControl('', { nonNullable: true, validators: [Validators.required, httpUrl] });
+  readonly form = new FormGroup({ url: this.url });
   readonly links = signal<Link[]>([]);
   readonly loading = signal(true);
   readonly listError = signal('');

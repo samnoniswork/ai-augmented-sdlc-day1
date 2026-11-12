@@ -7,11 +7,11 @@
 
   <section class="card" aria-labelledby="create-heading">
     <h2 id="create-heading">Shorten a link</h2>
-    <form (ngSubmit)="submit()" novalidate>
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <label for="url">Your URL</label>
       <div class="form-row">
         <input id="url" type="url" inputmode="url" autocomplete="url" placeholder="https://example.com"
-          [formControl]="url" [attr.aria-invalid]="url.invalid && url.touched ? 'true' : null"
+          formControlName="url" [attr.aria-invalid]="url.invalid && url.touched ? 'true' : null"
           aria-describedby="url-help url-error">
         <button type="submit" [disabled]="submitting()">{{ submitting() ? 'Creating...' : 'Shorten' }}</button>
       </div>
