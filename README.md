@@ -1,7 +1,9 @@
 # Snip frontend
 
-Angular 19 client for the Snip URL shortener. It creates links and displays their
+Angular 22 client for the Snip URL shortener. It creates links and displays their
 original URL, short link and hit count using the shared `/api/links` API.
+
+Use Node.js 22.22.3+ (22.x), 24.15.0+ (24.x), or 26+ with npm.
 
 Run the backend on port 3000, then run `npm install` and `npm start` here.
 Open `http://localhost:4200`. The development server proxies `/api` to
