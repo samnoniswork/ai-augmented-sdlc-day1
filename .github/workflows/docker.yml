@@ -28,7 +28,7 @@ jobs:
       - name: Check out main and submodules
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.event_name == 'workflow_run' && 'main' || github.sha }}
           submodules: recursive
           fetch-depth: 0
       - name: Skip when the scheduled bundle did not move its gitlink
@@ -59,7 +59,7 @@ jobs:
         if: steps.bundle-change.outputs.changed == 'true'
         working-directory: frontend
         run: |
-          npm install --no-package-lock
+          npm ci
           npm audit --audit-level=high
       - name: Set up QEMU
         if: steps.bundle-change.outputs.changed == 'true'
@@ -82,7 +82,7 @@ jobs:
           image-ref: snip:scan
           format: table
           exit-code: "1"
-          ignore-unfixed: true
+          ignore-unfixed: false
           vuln-type: os,library
           severity: HIGH,CRITICAL
       - name: Log in to GitHub Container Registry
@@ -92,21 +92,13 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Generate image tags
+      - name: Tag and push scanned image
         if: steps.bundle-change.outputs.changed == 'true'
-        id: metadata
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}
-          tags: |
-            type=raw,value=latest
-            type=sha,format=short
-      - name: Build and push
-        if: steps.bundle-change.outputs.changed == 'true'
-        uses: docker/build-push-action@v6
-        with:
-          context: ./bundle
-          file: ./bundle/Dockerfile
-          push: true
-          tags: ${{ steps.metadata.outputs.tags }}
-          labels: ${{ steps.metadata.outputs.labels }}
+        shell: bash
+        run: |
+          image="ghcr.io/${GITHUB_REPOSITORY,,}"
+          revision="$(git rev-parse --short=7 HEAD)"
+          docker tag snip:scan "$image:latest"
+          docker tag snip:scan "$image:sha-$revision"
+          docker push "$image:sha-$revision"
+          docker push "$image:latest"

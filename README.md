@@ -71,8 +71,9 @@ superproject to one exact component commit.
 node scripts/build-bundle.mjs
 ```
 
-The script updates the source submodules, builds the Angular app, assembles and
-commits the `bundle` branch, then commits the updated `bundle` gitlink on `main`.
+The script updates the source submodules, installs the locked frontend
+dependencies, audits them, builds the Angular app, and assembles and commits
+the `bundle` branch. It then commits the source and bundle gitlinks on `main`.
 Running it again without source changes is a no-op. Use `--push` to push both
 commits. The bundle serves the built UI and API from one Bun process:
 
@@ -87,3 +88,6 @@ publishes `ghcr.io/<owner>/<repo>:latest` and a short-SHA tag when the bundle
 gitlink changes; it also supports manual dispatch. The Docker workflow listens
 for completion of the bundle workflow because GitHub suppresses downstream
 `push` workflow triggers for commits pushed with `GITHUB_TOKEN`.
+Scheduled and completion-triggered workflows require `main` to be the
+repository's default branch. The image scan checks high and critical findings,
+including those without a fix, and the scanned image is the one pushed.

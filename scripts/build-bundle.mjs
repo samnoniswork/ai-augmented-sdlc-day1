@@ -52,7 +52,8 @@ function commitStagedChanges(cwd, message) {
 }
 
 run("git", ["submodule", "update", "--init", "--remote", "backend", "frontend", "cli"], root);
-runNpm(["install", "--no-package-lock"], frontend);
+runNpm(["ci"], frontend);
+runNpm(["audit", "--audit-level=high"], frontend);
 runNpm(["run", "build"], frontend);
 
 const index = path.join(frontend, "dist", "snip-frontend", "browser", "index.html");
@@ -103,12 +104,12 @@ if (bundleChanged) {
   console.log("Bundle unchanged.");
 }
 
-run("git", ["add", "bundle"], root);
-const mainChanged = commitStagedChanges(root, "Update generated bundle submodule");
+run("git", ["add", "backend", "frontend", "cli", "bundle"], root);
+const mainChanged = commitStagedChanges(root, "Update source and generated bundle submodules");
 if (mainChanged) {
-  console.log("Updated the bundle gitlink on main.");
+  console.log("Updated the submodule gitlinks on main.");
 } else {
-  console.log("Main gitlink unchanged.");
+  console.log("Main gitlinks unchanged.");
 }
 
 if (publish) {
